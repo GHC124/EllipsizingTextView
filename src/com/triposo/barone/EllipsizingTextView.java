@@ -32,7 +32,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 public class EllipsizingTextView extends TextView {
-  private static final String ELLIPSIS = "…";
+  private static final String DEFAULT_ELLIPSIS = "…";
   private static final Pattern DEFAULT_END_PUNCTUATION = Pattern.compile("[\\.,…;\\:\\s]*$", Pattern.DOTALL);
   private static final char DEFAULT_TOKENS_DIVIDER = ' ';
 
@@ -56,6 +56,7 @@ public class EllipsizingTextView extends TextView {
    * The character used to separate the text into tokens.
    */
   private char tokensDivider;
+  private String ellipsis;
 
   public EllipsizingTextView(Context context) {
     this(context, null);
@@ -72,6 +73,7 @@ public class EllipsizingTextView extends TextView {
     setMaxLines(a.getInt(0, Integer.MAX_VALUE));
     setEndPunctuationPattern(DEFAULT_END_PUNCTUATION);
     setTokensDivider(DEFAULT_TOKENS_DIVIDER);
+    setEllipsis(DEFAULT_ELLIPSIS);
   }
 
   public void setEndPunctuationPattern(Pattern pattern) {
@@ -80,6 +82,10 @@ public class EllipsizingTextView extends TextView {
 
   public void setTokensDivider(char wordsDivider) {
     this.tokensDivider = wordsDivider;
+  }
+
+  public void setEllipsis(String ellipsis) {
+    this.ellipsis = ellipsis;
   }
 
   public void addEllipsizeListener(EllipsizeListener listener) {
@@ -160,7 +166,7 @@ public class EllipsizingTextView extends TextView {
     if (layout.getLineCount() > linesCount) {
       // We have more lines of text than we are allowed to display.
       workingText = fullText.substring(0, layout.getLineEnd(linesCount - 1)).trim();
-      while (createWorkingLayout(workingText + ELLIPSIS).getLineCount() > linesCount) {
+      while (createWorkingLayout(workingText + ellipsis).getLineCount() > linesCount) {
         int lastSpace = workingText.lastIndexOf(tokensDivider);
         if (lastSpace == -1) {
           break;
@@ -169,7 +175,7 @@ public class EllipsizingTextView extends TextView {
       }
       // We should do this in the loop above, but it's cheaper this way.
       workingText = endPunctuationPattern.matcher(workingText).replaceFirst("");
-      workingText = workingText + ELLIPSIS;
+      workingText = workingText + ellipsis;
       ellipsized = true;
     }
     if (!workingText.equals(getText())) {
