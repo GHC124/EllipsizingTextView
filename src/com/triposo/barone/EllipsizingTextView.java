@@ -57,6 +57,7 @@ public class EllipsizingTextView extends TextView {
    */
   private char tokensDivider;
   private String ellipsis;
+  private boolean alwaysShowEllipsis;
 
   public EllipsizingTextView(Context context) {
     this(context, null);
@@ -74,6 +75,7 @@ public class EllipsizingTextView extends TextView {
     setEndPunctuationPattern(DEFAULT_END_PUNCTUATION);
     setTokensDivider(DEFAULT_TOKENS_DIVIDER);
     setEllipsis(DEFAULT_ELLIPSIS);
+    setAlwaysShowEllipsis(false);
   }
 
   public void setEndPunctuationPattern(Pattern pattern) {
@@ -86,6 +88,10 @@ public class EllipsizingTextView extends TextView {
 
   public void setEllipsis(String ellipsis) {
     this.ellipsis = ellipsis;
+  }
+
+  public void setAlwaysShowEllipsis(boolean alwaysShowEllipsis) {
+    this.alwaysShowEllipsis = alwaysShowEllipsis;
   }
 
   public void addEllipsizeListener(EllipsizeListener listener) {
@@ -173,10 +179,11 @@ public class EllipsizingTextView extends TextView {
         }
         workingText = workingText.substring(0, lastSpace);
       }
-      // We should do this in the loop above, but it's cheaper this way.
+      ellipsized = true;
+    }
+    if (ellipsized || (alwaysShowEllipsis && !"".equals(workingText))) {
       workingText = endPunctuationPattern.matcher(workingText).replaceFirst("");
       workingText = workingText + ellipsis;
-      ellipsized = true;
     }
     if (!workingText.equals(getText())) {
       programmaticChange = true;
