@@ -34,6 +34,7 @@ import android.widget.TextView;
 public class EllipsizingTextView extends TextView {
   private static final String ELLIPSIS = "…";
   private static final Pattern DEFAULT_END_PUNCTUATION = Pattern.compile("[\\.,…;\\:\\s]*$", Pattern.DOTALL);
+  private static final char DEFAULT_TOKENS_DIVIDER = ' ';
 
   public interface EllipsizeListener {
     void ellipsizeStateChanged(boolean ellipsized);
@@ -51,6 +52,10 @@ public class EllipsizingTextView extends TextView {
    * The end punctuation which will be removed when appending #ELLIPSIS.
    */
   private Pattern endPunctuationPattern;
+  /**
+   * The character used to separate the text into tokens.
+   */
+  private char tokensDivider;
 
   public EllipsizingTextView(Context context) {
     this(context, null);
@@ -66,10 +71,15 @@ public class EllipsizingTextView extends TextView {
     TypedArray a = context.obtainStyledAttributes(attrs, new int[] { android.R.attr.maxLines });
     setMaxLines(a.getInt(0, Integer.MAX_VALUE));
     setEndPunctuationPattern(DEFAULT_END_PUNCTUATION);
+    setTokensDivider(DEFAULT_TOKENS_DIVIDER);
   }
 
   public void setEndPunctuationPattern(Pattern pattern) {
     this.endPunctuationPattern = pattern;
+  }
+
+  public void setTokensDivider(char wordsDivider) {
+    this.tokensDivider = wordsDivider;
   }
 
   public void addEllipsizeListener(EllipsizeListener listener) {
@@ -151,7 +161,7 @@ public class EllipsizingTextView extends TextView {
       // We have more lines of text than we are allowed to display.
       workingText = fullText.substring(0, layout.getLineEnd(linesCount - 1)).trim();
       while (createWorkingLayout(workingText + ELLIPSIS).getLineCount() > linesCount) {
-        int lastSpace = workingText.lastIndexOf(' ');
+        int lastSpace = workingText.lastIndexOf(tokensDivider);
         if (lastSpace == -1) {
           break;
         }
