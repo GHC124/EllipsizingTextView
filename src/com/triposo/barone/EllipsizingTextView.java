@@ -171,7 +171,7 @@ public class EllipsizingTextView extends TextView {
     int linesCount = getLinesCount();
     if (layout.getLineCount() > linesCount) {
       // We have more lines of text than we are allowed to display.
-      workingText = fullText.substring(0, layout.getLineEnd(linesCount - 1)).trim();
+      workingText = workingText.substring(0, layout.getLineEnd(linesCount - 1)).trim();
       while (createWorkingLayout(workingText + ellipsis).getLineCount() > linesCount) {
         int lastSpace = workingText.lastIndexOf(tokensDivider);
         if (lastSpace == -1) {
